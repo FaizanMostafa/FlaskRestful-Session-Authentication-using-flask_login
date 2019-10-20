@@ -44,6 +44,14 @@ def load_user(username):
         return None
     return User(user['username'])
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    retJson = {
+        "message": "Unauthorized request",
+        "status": 401
+    }
+    return jsonify(retJson)
+
 def userExists(username):
     user = Users.find_one({
         "username": username
@@ -99,7 +107,7 @@ class Login(Resource):
             return jsonify({'message': 'User {} doesn\'t exist'.format(username)})
         correct_pswd = verifyPassword(username, password)
         if correct_pswd:
-            obj = User(getUser(username)["username"])
+            obj = User(username)
             login_user(obj)
             retJson = {
                 "message": "Successfully logged in!"
